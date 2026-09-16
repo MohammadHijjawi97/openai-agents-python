@@ -42,6 +42,17 @@ def test_is_gpt_5_default_returns_false_for_non_gpt_5_default_model():
     assert is_gpt_5_default() is False
 
 
+@patch.dict(os.environ, {"OPENAI_DEFAULT_MODEL": "  GPT-4.1  "})
+def test_get_default_model_strips_whitespace_from_env():
+    assert get_default_model() == "gpt-4.1"
+    assert is_gpt_5_default() is False
+
+
+@patch.dict(os.environ, {"OPENAI_DEFAULT_MODEL": "   "})
+def test_get_default_model_falls_back_when_env_is_blank():
+    assert get_default_model() == "gpt-5.6-luna"
+
+
 def test_gpt_5_reasoning_settings_required_detects_gpt_5_models_while_ignoring_chat_latest():
     assert gpt_5_reasoning_settings_required("gpt-5") is True
     assert gpt_5_reasoning_settings_required("gpt-5.1") is True

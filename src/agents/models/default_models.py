@@ -96,11 +96,18 @@ def is_gpt_5_default() -> bool:
     return gpt_5_reasoning_settings_required(get_default_model())
 
 
+_FALLBACK_DEFAULT_MODEL = "gpt-5.6-luna"
+
+
 def get_default_model() -> str:
     """
     Returns the default model name.
     """
-    return os.getenv(OPENAI_DEFAULT_MODEL_ENV_VARIABLE_NAME, "gpt-5.6-luna").lower()
+    raw = os.getenv(OPENAI_DEFAULT_MODEL_ENV_VARIABLE_NAME)
+    if raw is None:
+        return _FALLBACK_DEFAULT_MODEL
+    model = raw.strip().lower()
+    return model or _FALLBACK_DEFAULT_MODEL
 
 
 def get_default_model_settings(model: str | None = None) -> ModelSettings:
