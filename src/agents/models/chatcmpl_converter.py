@@ -911,10 +911,16 @@ class Converter:
             elif reasoning_item := cls.maybe_reasoning_message(item):
                 clear_pending_reasoning_state()
                 # Reconstruct thinking blocks from content (text) and encrypted_content (signature)
-                content_items = reasoning_item.get("content", [])
+                # ``.get("content", [])`` still returns None when the key is present with a
+                # null value, which LiteLLM/model_dump paths have been observed to emit.
+                raw_content_items = reasoning_item.get("content") or []
+                content_items = raw_content_items if isinstance(raw_content_items, list) else []
                 encrypted_content = reasoning_item.get("encrypted_content")
 
-                item_provider_data: dict[str, Any] = reasoning_item.get("provider_data", {})  # type: ignore[assignment]
+                raw_provider_data = reasoning_item.get("provider_data") or {}
+                item_provider_data: dict[str, Any] = (
+                    raw_provider_data if isinstance(raw_provider_data, dict) else {}
+                )
                 item_model = item_provider_data.get("model", "")
                 reasoning_field = item_provider_data.get(_CHAT_COMPLETIONS_REASONING_FIELD_KEY)
                 origin_provider_data = {

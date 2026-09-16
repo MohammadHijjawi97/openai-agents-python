@@ -55,6 +55,25 @@ def test_plaintext_reasoning_round_trips_on_its_assistant_message() -> None:
     ]
 
 
+def test_items_to_messages_accepts_reasoning_with_null_content_and_provider_data() -> None:
+    messages = Converter.items_to_messages(
+        [
+            {
+                "type": "reasoning",
+                "id": "rs_null",
+                "content": None,
+                "provider_data": None,
+            },
+            {
+                "role": "user",
+                "content": "hello",
+            },
+        ]
+    )
+
+    assert messages == [{"role": "user", "content": "hello"}]
+
+
 def test_plaintext_reasoning_round_trips_with_a_tool_call() -> None:
     message = ChatCompletionMessage.model_validate(
         {
