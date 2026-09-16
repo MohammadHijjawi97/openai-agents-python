@@ -2049,7 +2049,10 @@ class _ConversionHelper:
 
         if isinstance(user_input, dict):
             content: list[Content] = []
-            for item in user_input.get("content", []):
+            raw_content = user_input.get("content") or []
+            if not isinstance(raw_content, list):
+                raw_content = []
+            for item in raw_content:
                 try:
                     if not isinstance(item, dict):
                         continue

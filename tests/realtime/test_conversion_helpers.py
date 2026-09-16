@@ -214,6 +214,22 @@ class TestConversionHelperUserInput:
         assert result.content is not None
         assert len(result.content) == 0
 
+    def test_convert_user_input_to_conversation_item_dict_null_content(self):
+        """A dict payload with content=None should convert like empty content, not raise."""
+        user_input_dict = {
+            "type": "message",
+            "role": "user",
+            "content": None,
+        }
+        event = RealtimeModelSendUserInput(user_input=user_input_dict)  # type: ignore[arg-type]
+
+        result = _ConversionHelper.convert_user_input_to_conversation_item(event)
+
+        assert result.type == "message"
+        assert result.role == "user"
+        assert result.content is not None
+        assert len(result.content) == 0
+
     def test_convert_user_input_to_item_create(self):
         """Test converting user input to item create event."""
         event = RealtimeModelSendUserInput(user_input="Test message")
