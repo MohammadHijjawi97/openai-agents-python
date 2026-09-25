@@ -797,7 +797,7 @@ class MCPUtil:
             tool_output = json.dumps(structured_content)
         else:
             tool_output_list: list[ToolOutputItem] = []
-            for item in result.content:
+            for item in result.content or []:
                 if item.type == "text":
                     tool_output_list.append(ToolOutputTextDict(type="text", text=item.text))
                 elif item.type == "image":

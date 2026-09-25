@@ -684,6 +684,31 @@ async def test_invoke_mcp_tool():
 
 
 @pytest.mark.asyncio
+async def test_invoke_mcp_tool_accepts_null_content():
+    """Servers that omit content (null instead of []) should not crash invoke_mcp_tool."""
+    from types import SimpleNamespace
+
+    server = FakeMCPServer()
+    server.add_tool("test_tool", {})
+    ctx = RunContextWrapper(context=None)
+    tool = MCPTool(name="test_tool", inputSchema={})
+
+    async def _call_tool(*args: Any, **kwargs: Any) -> Any:
+        return SimpleNamespace(
+            content=None,
+            structuredContent=None,
+            structured_content=None,
+            isError=False,
+            is_error=False,
+            meta=None,
+        )
+
+    server.call_tool = _call_tool  # type: ignore[method-assign]
+    result = await MCPUtil.invoke_mcp_tool(server, tool, ctx, "{}")
+    assert result == []
+
+
+@pytest.mark.asyncio
 async def test_mcp_meta_resolver_merges_and_passes():
     captured: dict[str, Any] = {}
 
